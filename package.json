@@ -22,7 +22,14 @@
   "engines": {
     "node": ">=4.2.6 || >=5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.1",
+    "gulp-shell": "^0.5.2",
+    "jshint": "^2.9.3",
+    "jshint-stylish": "^2.2.1",
+    "run-sequence": "^1.2.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

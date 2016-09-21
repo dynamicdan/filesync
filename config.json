@@ -1,0 +1,172 @@
+{
+    "roots": {
+        "C:/Users/laitlaar/Documents/codesquare/sn-filesync/records": {
+            "host": "dev11936.service-now.com",
+            "auth": "YWRtaW46Ymlzc21pbGxhaA=="
+        }
+    },
+    "search": {
+        "mine": {
+            "query": "active=true^sys_updated_by=javascript:gs.getUserName()^ORsys_created_by=javascript:gs.getUserName()^ORDERBYDESCsys_updated_on",
+            "records_per_search": "10"
+        },
+        "my_app": {
+            "query": "sys_scope=61bde7134fd122009d184a318110c761",
+            "records_per_search": "100",
+            "download": true
+        },
+        "script_includes": {
+            "table": "sys_script_include",
+            "query": "sys_scope=61bde7134fd122009d184a318110c761",
+            "records_per_search": "50",
+            "download": true
+        },
+        "ui_script": {
+            "table": "sys_ui_script",
+            "query": "sys_scope=61bde7134fd122009d184a318110c761",
+            "records_per_search": "50",
+            "download": true
+        },
+        "business_rules": {
+            "table": "sys_script",
+            "query": "sys_scope=61bde7134fd122009d184a318110c761",
+            "records_per_search": "50",
+            "download": true
+        }
+    },
+    "debug": false,
+    "folders": {
+        "business_rules": {
+            "table": "sys_script",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "collection/when",
+            "_custom": true
+        },
+        "client_scripts": {
+            "table": "sys_script_client",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "table/type",
+            "_custom": true
+        },
+        "processors": {
+            "table": "sys_processor",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "script_actions": {
+            "table": "sysevent_script_action",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "event_name",
+            "_custom": true
+        },
+        "script_includes": {
+            "table": "sys_script_include",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "client_<client_callable>",
+            "_custom": true
+        },
+        "style_sheets": {
+            "table": "content_css",
+            "key": "name",
+            "fields": {
+                "css": "style"
+            },
+            "_custom": true
+        },
+        "ui_actions": {
+            "table": "sys_ui_action",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "table/client_<client>",
+            "_custom": true
+        },
+        "ui_macros": {
+            "table": "sys_ui_macro",
+            "key": "name",
+            "fields": {
+                "xhtml": "xml"
+            },
+            "subDirPattern": "category",
+            "_custom": true
+        },
+        "ui_pages": {
+            "table": "sys_ui_page",
+            "key": "name",
+            "fields": {
+                "xhtml": "html",
+                "client.js": "client_script",
+                "server.js": "processing_script"
+            },
+            "subDirPattern": "category",
+            "_custom": true
+        },
+        "ui_scripts": {
+            "table": "sys_ui_script",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "dynamic_content_blocks": {
+            "table": "content_block_programmatic",
+            "key": "name",
+            "fields": {
+                "xhtml": "programmatic_content"
+            },
+            "subDirPattern": "category",
+            "_custom": true
+        },
+        "email_templates": {
+            "table": "sysevent_email_template",
+            "key": "name",
+            "fields": {
+                "html": "message_html"
+            },
+            "subDirPattern": "collection",
+            "_custom": true
+        },
+        "fix_scripts": {
+            "table": "sys_script_fix",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "catalog_client_scripts": {
+            "table": "catalog_script_client",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "applies_to_<applies_to>/type",
+            "_custom": true
+        },
+        "sys_web_service": {
+            "table": "sys_web_service",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        }
+    }
+}
