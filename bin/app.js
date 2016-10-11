@@ -3,8 +3,6 @@
 // ---------------------------------------------------
 // 3rd party modules
 
-var argv = require('minimist')(process.argv.slice(2));
-//console.dir(argv);
 
 var chokidar = require('chokidar');
 require('colors');
@@ -15,6 +13,7 @@ var crypto = require('crypto');
 var glob = require("glob");
 var winston = require('winston');
 var moment = require('moment');
+var inquirer = require('inquirer');
 
 // ---------------------------------------------------
 // custom imports
@@ -62,10 +61,59 @@ var filesInQueueToDownload = 0,
 // a list of FileRecord objects indexed by file path for easy access
 var fileRecords = {};
 
-// set to true to exit after a download is complete (avoids watcher starting)
+// set to true to exit after a dwd is complete (avoids watcher starting)
 var endApp = false;
 
 // ---------------------------------------------------
+
+var argv = require('minimist')(process.argv.slice(2));
+//console.dir(argv);
+//
+var jsdiff = require('diff'),
+    myDiff = new jsdiff.Diff();
+    
+myDiff.tokenize = function(value) {
+  return value.split(/(\n|\r\n)/);
+};
+
+/**
+ * Diffs two file contents.
+ * @param  {String} file  file name where diff results will be output.
+ * @param  {String} local local file content
+ * @param  {String} head  serviceNow instance file
+ * @return {String}       The difference between the two file
+ * elements present only on the instance are surrounded by an (>>>>> *** ==== HEAD) block
+ * elements present only in the local file are surrounded by an (>>>>> *** ==== Local) block
+ */
+function diffFiles(file, local, head) {
+    "use strict";
+    var value = '',
+        isNewLn,
+        regExp = new RegExp(/^(\n|\r\n|\n\n|\r\n\r\n)$/i),
+        endSeparator,
+        startSeparator,
+        // diffs = jsdiff.diffLines(local, head);
+        diffs = myDiff.diff(local, head);
+
+    diffs.forEach(function(part){
+        endSeparator = regExp.test(part.value.charAt(part.value.length -1)) ? "" : "\n";
+        startSeparator = regExp.test(part.value.charAt(0)) ? "" : "\n";
+        isNewLn = regExp.test(part.value);
+
+        if (!isNewLn) {
+            if (part.removed) {
+                value += "\n>>>>>>>>>>" + startSeparator + part.value + endSeparator + "========== Local";
+            } else if (part.added) {
+                value += "\n>>>>>>>>>>" + startSeparator + part.value + endSeparator + "========== HEAD";
+            } else {
+                value += '\n' + part.value;
+            }
+           
+        }
+    });
+
+    return value;
+}
 
 // entry point
 function init() {
@@ -474,27 +522,33 @@ function processFoundRecords(searchObj, queryObj, records) {
         }
         filePath += fileName;
 
-        // ensure we have a valid file name
-        if (fileSystemSafeName.length === 0) {
-            totalErrors++;
-            failedFiles.push(filePath);
-            continue;
-        }
-
-        validData = record.recordData.length > 0 || record.recordData.sys_id;
-        if (validData) {
-            logit.info('File to create: ' + filePath);
+        //case it is a pull operation compare local with remote to decide if we wanna overwrite local file 
+        //or push it to the remote
+        if (argv.pull) {
+            send(filePath);
         } else {
-            logit.info('Found but will ignore due to no content: ' + filePath);
-            totalErrors++;
-            failedFiles.push(filePath);
-        }
+            // ensure we have a valid file name
+            if (fileSystemSafeName.length === 0) {
+                totalErrors++;
+                failedFiles.push(filePath);
+                continue;
+            }
 
-        if (queryObj.download) {
-            // don't save files of 0 bytes as this will confuse everyone
+            validData = record.recordData.length > 0 || record.recordData.sys_id;
             if (validData) {
-                totalFilesToSave++;
-                saveFoundFile(filePath, record);
+                logit.info('File to create: ' + filePath);
+            } else {
+                logit.info('Found but will ignore due to no content: ' + filePath);
+                totalErrors++;
+                failedFiles.push(filePath);
+            }
+
+            if (queryObj.download) {
+                // don't save files of 0 bytes as this will confuse everyone
+                if (validData) {
+                    totalFilesToSave++;
+                    saveFoundFile(filePath, record);
+                }
             }
         }
     }
@@ -1044,14 +1098,16 @@ function push(snc, db, callback) {
     });
 }
 
-function send(file, callback) {
 
-    // default callback
-    callback = callback || function (complete) {
-        if (!complete) {
-            logit.error(('Could not send file:  ' + file).red);
-        }
-    };
+
+
+/**
+ * Check if there are conflicts between local and remote script.
+ * @param  {String}   file     local file
+ * @param  {Function} callback 
+ * 
+ */
+function checkConflicts(file, callback) {
     readFile(file, function (data) {
 
         var map = fileRecords[file].getSyncMap(),
@@ -1068,57 +1124,161 @@ function send(file, callback) {
         // payload for a record update (many fields and values can be set)
         db.payload[db.field] = data;
 
+        var options = {
+                "db": db,
+                "snc": snc,
+                "map": map,
+                "callback": callback
+            },
+            choices,
+            subs = ['>>>>', '==== HEAD', '==== Local'];
 
         // only allow an update if the instance is still in sync with the local env.
         instanceInSync(snc, db, map, file, data, function (err, obj) {
 
             if (!obj.inSync) {
-                notifyUser(msgCodes.NOT_IN_SYNC, {
+                notifyUser(msgCodes.CONFLICTS_DETECTED, {
                     table: map.table,
                     file: map.keyValue,
                     field: map.field,
                     open: fileRecords[file].getRecordUrl()
                 });
-                logit.warn('Instance record is not in sync with local env ("%s").', map.keyValue);
-                callback(false);
-                return;
+
+                if (new RegExp(subs.join("|")).test(data)) {
+                    logit.error('could not process this action!'.red);
+                    logit.info('Please make sure all conflicts in ("%s") are resolved!.'.red, map.keyValue);
+                    callback(false);
+                    return;
+                }
+
+                if (argv.push) {
+                    choices = [
+                        'overwrite file in ServiceNow',
+                        'resolve conflicts',
+                        'abort this action'
+                        ];
+                } else if (argv.pull) {
+                    choices = [
+                        'overwrite local file',
+                        'resolve conflicts',
+                        'abort this action'
+                        ];
+                }
+
+                inquireUserInput(options, file, choices, obj);
             }
             if (obj.noPushNeeded) {
-                logit.info('Local has no changes or remote in sync; no need for push/send.');
+                logit.info('Local has no changes or remote in sync; no need for push/pull.');
                 callback(true);
                 return;
             }
-
-
-            logit.info('Updating instance version ("%s").', map.keyValue);
-            push(snc, db, function (complete) {
-                if (complete) {
-                    // update hash for collision detection
-                    fileRecords[file].saveHash(data, function (saved) {
-                        if (saved) {
-                            notifyUser(msgCodes.UPLOAD_COMPLETE, {
-                                file: map.keyValue,
-                                open: fileRecords[file].getRecordUrl()
-                            });
-                            logit.info('Updated instance version: %s.%s : query: %s', db.table, db.field, db.query);
-                            logit.debug('Updated instance version:', db);
-
-                        } else {
-                            notifyUser(msgCodes.COMPLEX_ERROR);
-                        }
-                        callback(saved);
-                    });
-                } else {
-                    notifyUser(msgCodes.UPLOAD_ERROR, {
-                        file: map.keyValue,
-                        open: fileRecords[file].getRecordUrl()
-                    });
-                    callback(complete);
-                }
-
-            });
         });
     });
+}
+
+/**
+ * Display a log of diffs in the console terminal.
+ * @param  {String} diffs Diffs to show in the console
+ */
+function displayPatch (diffs) {
+    var logs = '';
+
+    diffs = diffs.split(/(\n|\r\n)/);
+
+    for (var i = 0; i < diffs.length - 1; i++) {
+       if (diffs[i].charAt(0) === "-") {
+            logs += diffs[i].red;
+       } else if (diffs[i].charAt(0) === "+") {
+            logs += diffs[i].green;
+       } else {
+            logs += diffs[i];
+       }
+    }
+    logit.info(logs);
+}
+
+/**
+ * Inquire user response whether he want to overwrite or resolve conflicts
+ * @param  {object} options An object containing usefull parameters used by the function
+ * @param  {String} file    Local file
+ * @param  {Array}  choices a list of choices to prompt to the user
+ * @param  {Object} obj     An object presenting the remote script
+ * 
+ */
+function inquireUserInput (options, file, choices, obj) {
+    var map = options.map,
+        db = options.db,
+        snc = options.snc,
+        data = options.db.payload[db.field],
+        callback = options.callback,
+        diffPatch = jsdiff.createPatch(file, data, obj.records[0][map.field]),
+        conflictsValue = diffFiles(file, data, obj.records[0][map.field]);
+
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                message: 'Conflict on file: '+ file,
+                name: 'conflict',
+                choices: choices
+            }])
+        .then(function (answers) {
+            if (answers['conflict'] === 'resolve conflicts') {
+                logit.warn('Please resole conflicts in ("%s") before pushing changes.', map.keyValue);
+                fs.writeFile(file, conflictsValue, "UTF-8");
+                displayPatch(diffPatch);
+                callback(false);
+                return;
+           } else if (answers['conflict'] === 'overwrite file in ServiceNow') {
+                logit.info('Updating instance version ("%s").', map.keyValue);
+                push(snc, db, function (complete) {
+                    if (complete) {
+                        // update hash for collision detection
+                        fileRecords[file].saveHash(data, function (saved) {
+                            if (saved) {
+                                notifyUser(msgCodes.UPLOAD_COMPLETE, {
+                                    file: map.keyValue,
+                                    open: fileRecords[file].getRecordUrl()
+                                });
+                                logit.info('Updated instance version: %s.%s : query: %s', db.table, db.field, db.query);
+                                logit.debug('Updated instance version:', db);
+                                logit.info('Action done successfully');
+                                return;
+                            } else {
+                                notifyUser(msgCodes.COMPLEX_ERROR);
+                            }
+                            callback(saved);
+                        });
+                    } else {
+                        notifyUser(msgCodes.UPLOAD_ERROR, {
+                            file: map.keyValue,
+                            open: fileRecords[file].getRecordUrl()
+                        });
+                        callback(complete);
+                    }
+                });
+           } else if (answers['conflict'] === 'overwrite local file') {
+                fs.writeFile(file, obj.records[0][map.field]);
+                logit.info('Local file has overwritten successfully.');
+                return;
+           }else {
+                logit.info('Action aborted.');
+                return; 
+           }
+            
+        });
+}
+
+function send(file, callback) {
+
+    // default callback
+    callback = callback || function (complete) {
+        if (!complete) {
+            logit.error(('Could not send file:  ' + file).red);
+        }
+    };
+
+    checkConflicts(file, callback);
 }
 
 function addFile(file, callback) {
@@ -1207,17 +1367,6 @@ function trackFile(file) {
  */
 function instanceInSync(snc, db, map, file, newData, callback) {
 
-    // first lets really check if we have a change
-    var previousLocalVersionHash = fileRecords[file].getLocalHash();
-    var newDataHash = makeHash(newData);
-    if (previousLocalVersionHash == newDataHash) {
-        callback(false, {
-            inSync: true,
-            noPushNeeded: true
-        });
-        return; // no changes
-    }
-
     logit.info('Comparing remote version with previous local version...');
 
     snc.table(db.table).getRecords(db, function (err, obj) {
@@ -1234,14 +1383,19 @@ function instanceInSync(snc, db, map, file, newData, callback) {
         logit.debug('Received:'.green, db);
 
         var remoteVersion = obj.records[0][db.field],
-            remoteHash = makeHash(remoteVersion);
+            remoteHash = makeHash(remoteVersion),
+            previousLocalVersionHash = fileRecords[file].getLocalHash(),
+            newDataHash = makeHash(newData);
 
         // CASE 1. Records local and remote are the same
         if (newDataHash == remoteHash) {
             // handle the scenario where the remote version was changed to match the local version.
             // when this happens update the local hash as there would be no collision here (and nothing to push!)
-            obj.inSync = true;
-            obj.noPushNeeded = true;
+            callback(false, {
+                inSync: true,
+                noPushNeeded: true
+            });
+            return; // no changes
             // update local hash.
             fileRecords[file].saveHash(newData, function (saved) {
                 if (!saved) {
@@ -1250,11 +1404,16 @@ function instanceInSync(snc, db, map, file, newData, callback) {
             });
 
             // CASE 2. the last local downloaded version matches the server version (stanard collision test scenario)
-        } else if (remoteHash == previousLocalVersionHash) {
+            // and no changes have been made on the local file
+        } else if (remoteHash == previousLocalVersionHash && newDataHash === remoteHash) {
             obj.inSync = true;
+            //CASE 3, the remote version and the local version not in sync
+        } else if ( newDataHash !== remoteHash) {
+            // case no local change but server changes
+            // case local changes but server remains intact
+            // case both local and server change
+            callback(err, obj);
         }
-        // CASE 3, the remote version changed since we last downloaded it = not in sync
-        callback(err, obj);
     });
 }
 
