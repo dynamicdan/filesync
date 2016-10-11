@@ -92,7 +92,6 @@ function diffFiles(file, local, head) {
         regExp = new RegExp(/^(\n|\r\n|\n\n|\r\n\r\n)$/i),
         endSeparator,
         startSeparator,
-        // diffs = jsdiff.diffLines(local, head);
         diffs = myDiff.diff(local, head);
 
     diffs.forEach(function(part){

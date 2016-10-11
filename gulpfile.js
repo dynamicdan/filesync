@@ -11,13 +11,13 @@ gulp.task('default', function() {
 });
 
 gulp.task('jshint-client', function () {
-	return gulp.src(['./lib/*.js', './sncapappsfrancedev/ui_scripts/*.js', './sncapappsfrancedev/business_rules/*.js'])
+	return gulp.src(['./lib/*.js', './records/ui_scripts/*.js', './records/business_rules/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('jshint-server', function () {
-	return gulp.src(['./lib/*.js','./sncapappsfrancedev/script_includes/*.js'])
+	return gulp.src(['./lib/*.js','./records/script_includes/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter(stylish));
 });
