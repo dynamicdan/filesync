@@ -24,14 +24,7 @@
   },
   "devDependencies": {
     "diff": "^3.0.1",
-    "gulp": "^3.9.1",
-    "gulp-jshint": "^2.0.1",
-    "gulp-shell": "^0.5.2",
-    "inquirer": "^1.2.2",
-    "jscs": "^3.0.7",
-    "jshint": "^2.9.3",
-    "jshint-stylish": "^2.2.1",
-    "run-sequence": "^1.2.2"
+    "inquirer": "^1.2.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
