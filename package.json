@@ -24,7 +24,19 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "setup": "\"run-script\\setup.bat\"",
+
+    "watch-rttmsdev": "node bin/app.js --config rttmsdev.config.json",
+    "watch-riotintodev": "node bin/app.js --config riotintodev.config.json",
+
+    "search-rttmsdev": "\"run-script\\search.bat rttmsdev\"",
+    "search-riotintodev": "\"run-script\\search.bat riotintodev\"",
+
+    "resync-rttmsdev": "node bin/app.js --config rttmsdev.config.json --resync",
+    "resync-riotintodev": "node bin/app.js --config riotintodev.config.json --resync" ,
+
+    "portal-rttmsdev": "\"run-script\\portal.bat rttmsdev\"",
+    "portal-riotintodev": "\"run-script\\portal.bat riotintodev\""
   },
   "repository": {
     "type": "git",

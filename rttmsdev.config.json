@@ -1,0 +1,225 @@
+{
+    "roots": {
+        "src/rttmsdev": {
+            "host": "rttmsdev.service-now.com",
+            "user": "",
+            "pass": ""
+        }
+    },
+    "search": {
+        "portal-pages": {
+            "table": "sys_ui_page",
+            "query": "nameSTARTSWITHportal",
+            "records_per_search": "100",
+            "download": true
+        },
+        "portal-scripts": {
+            "table": "sys_ui_script",
+            "query": "nameSTARTSWITHportal",
+            "records_per_search": "100",
+            "download": true
+        },
+        "portal-macro": {
+            "table": "sys_ui_macro",
+            "query": "nameSTARTSWITHportal",
+            "records_per_search": "100",
+            "download": true
+        },
+        "portal-content": {
+            "table": "content_block_programmatic",
+            "query": "name=rttms-v2-home",
+            "records_per_search": "100",
+            "download": true
+        },
+        "portal-css": {
+            "table": "content_css",
+            "query": "nameSTARTSWITHportal",
+            "records_per_search": "100",
+            "download": true
+        }
+    },
+    "preLoad": false,
+    "createAllFolders": true,
+    "ensureUniqueNames": false,
+    "ignoreDefaultFolders": false,
+    "debug": false,
+    "folders": {
+        "business_rules": {
+            "table": "sys_script",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "collection/when",
+            "_custom": true
+        },
+        "client_scripts": {
+            "table": "sys_script_client",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "table/type",
+            "_custom": true
+        },
+        "email_scripts": {
+            "table": "sys_script_email",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "inbound_actions": {
+            "table": "sysevent_in_email_action",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "processors": {
+            "table": "sys_processor",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "script_actions": {
+            "table": "sysevent_script_action",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "event_name",
+            "_custom": true
+        },
+        "script_includes": {
+            "table": "sys_script_include",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "client_<client_callable>",
+            "_custom": true
+        },
+        "style_sheets": {
+            "table": "content_css",
+            "key": "name",
+            "fields": {
+                "css": "style"
+            },
+            "_custom": true
+        },
+        "ui_actions": {
+            "table": "sys_ui_action",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "table/client_<client>",
+            "_custom": true
+        },
+        "ui_macros": {
+            "table": "sys_ui_macro",
+            "key": "name",
+            "fields": {
+                "xhtml": "xml"
+            },
+            "subDirPattern": "category",
+            "_custom": true
+        },
+        "ui_pages": {
+            "table": "sys_ui_page",
+            "key": "name",
+            "fields": {
+                "xhtml": "html",
+                "client.js": "client_script",
+                "server.js": "processing_script"
+            },
+            "subDirPattern": "category",
+            "_custom": true
+        },
+        "ui_scripts": {
+            "table": "sys_ui_script",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "dynamic_content_blocks": {
+            "table": "content_block_programmatic",
+            "key": "name",
+            "fields": {
+                "xhtml": "programmatic_content"
+            },
+            "subDirPattern": "category",
+            "_custom": true
+        },
+        "email_templates": {
+            "table": "sysevent_email_template",
+            "key": "name",
+            "fields": {
+                "html": "message_html"
+            },
+            "subDirPattern": "collection",
+            "_custom": true
+        },
+        "fix_scripts": {
+            "table": "sys_script_fix",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "catalog_client_scripts": {
+            "table": "catalog_script_client",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "applies_to_<applies_to>/type",
+            "_custom": true
+        },
+        "sys_web_service": {
+            "table": "sys_web_service",
+            "key": "name",
+            "fields": {
+                "js": "script"
+            },
+            "_custom": true
+        },
+        "web_service_resources": {
+            "table": "sys_ws_operation",
+            "key": "name",
+            "fields": {
+                "js": "operation_script"
+            },
+            "subDirPattern": "web_service_definition",
+            "_custom": true
+        },
+        "widgets": {
+            "table": "sp_widget",
+            "key": "name",
+            "fields": {
+                "client.js": "client_script",
+                "demo.js": "demo_data",
+                "server.js": "script",
+                "html": "template",
+                "scss": "scss"
+            },
+            "_custom": true
+        },
+        "css": {
+            "table": "content_css",
+            "key": "name",
+            "fields": {
+                "css": "style"
+            },
+            "_custom": true
+        }
+    }
+}
