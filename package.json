@@ -24,7 +24,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "setup": "./run-script/setup.cmd",
+    "setup": "\"run-script\\setup.cmd\"",
     "setup-mac": "./run-script/setup.cmd",
     "setup-win": "\"run-script\\setup.cmd\"",
 
