@@ -27,6 +27,8 @@ var configLoader = require('../lib/config'),
     Search = SearchUtil.Search,
     runTests = require('../lib/tests'),
     FileRecordUtil = require('../lib/file-record'),
+    StringUtilInc = require('../lib/string-util'),
+    StringUtil = new StringUtilInc.StringUtil(),
     FileRecord = FileRecordUtil.FileRecord,
     makeHash = FileRecordUtil.makeHash;
 
@@ -248,83 +250,6 @@ function tableDefined(tableName) {
     return false;
 }
 
-function extractTableFromName(str) {
-    var table = '';
-    var start, end;
-
-    // this is the most complex case so handle it first
-    if (str.indexOf('uri=') >= 0) {
-        /*
-         * Example
-         * http://localhost:16008/nav_to.do?uri=%2Fsp_widget.do%3Fsys_id%3Df37aa302cb70020000f8d856634c9cfc%26sysparm_record_target%3Dsp_widget
-         *
-         * OR
-         *
-         * http://localhost:16008/nav_to.do?uri=sp_angular_provider.do?sys_id=06e836f0d722120023c84f80de6103a1"
-         *
-         */
-        // normalise the string
-        str = str.replace(/\%2F/g, '').replace(/\%3F/g, '');
-        start = str.replace('_list', '').split('.do');
-        end = start[1].split('uri=');
-        table = end.pop();
-
-    } else if (str.indexOf('.do') >= 0) {
-        /*
-         * Example
-         * http://localhost:16008/sp_widget.do?sys_id=c6545050ff223100ba13ffffffffffe8&sysparm_record_target=sp_widget
-         *
-         */
-        start = str.split('.do');
-        end = start[0].split('/');
-        table = end.pop();
-
-    } else {
-        /*
-         * Example
-         * sp_widget_c6545050ff223100ba13ffffffffffe8
-         */
-        var sys_id = extractSysIdFromName(str);
-        table = argv.search.replace('_' + sys_id, '');
-    }
-
-    return table;
-}
-
-/**
- * Returns the last part of the string counting backwards from
- * end to (end - num)
- */
-function lastChars(s, num) {
-    var rev = reverse(s);
-    return reverse(rev.substring(0, num));
-}
-
-function reverse(s) {
-    return s.split('').reverse().join('');
-}
-
-function extractSysIdFromName(str) {
-    var regEx = new RegExp("[a-z0-9]{32,}", "gi"),
-        matches;
-    if (typeof str != 'string') {
-        return false;
-    }
-
-    matches = str.match(regEx);
-
-    if (matches && matches.length > 0) {
-        // assumes only one sys_id str
-        var match = matches[0];
-        // let's make sure we didn't match to much crud at the start.
-        match = lastChars(match, 32);
-
-        return match;
-    }
-
-    return false;
-}
-
 
 function getFirstRoot() {
     var roots = config.roots,
@@ -342,19 +267,6 @@ function updateFileMeta(file, record) {
 }
 
 
-/**
- * Remove problematic characters for saving to a file
- * @param pathPart {string} - a folder or file name (not full path) to normalise
- * @return {string} - updated path
- */
-function normaliseRecordName(pathPart) {
-    var newName = pathPart;
-    newName = newName.replace(/\//g, '_');
-    newName = newName.replace(/\*/g, '_');
-    newName = newName.replace(/\\/g, '_');
-
-    return newName;
-}
 
 function pushUpRecord(argv) {
     /*
@@ -364,7 +276,7 @@ function pushUpRecord(argv) {
      *
      */
 
-    var sys_id = extractSysIdFromName(argv.pull);
+    var sys_id = StringUtil.extractSysIdFromName(argv.pull);
     sys_id = false; // TODO: not yet supported
     if (sys_id) {
         // TODO: find the file that uses this sys_id (by using the .sync_data files)
@@ -418,7 +330,7 @@ function pullDownRecord(argv) {
 
     // pull = via seach query if set
     var query = argv.search_query || '';
-    var sys_id = extractSysIdFromName(argv.pull);
+    var sys_id = StringUtil.extractSysIdFromName(argv.pull);
     var restrictFields = [];
     var parts, folder, file, pullPath, folderObj = false;
     // was a path value provided to --pull ?
@@ -574,11 +486,11 @@ function startSearch(argv) {
         // could also be a long url
 
         // try to guess from provided param
-        var sys_id = extractSysIdFromName(argv.search);
+        var sys_id = StringUtil.extractSysIdFromName(argv.search);
         var table = '';
         if (sys_id) {
             // try to get table
-            table = extractTableFromName(argv.search);
+            table = StringUtil.extractTableFromName(argv.search);
             if (table.length > 2 && table != sys_id) {
                 // real table!
                 queryObj.query = 'sys_id=' + sys_id;
@@ -623,7 +535,7 @@ function startSearch(argv) {
  * @param queryObj (Obj) - config for search
  */
 function buildQueryForSearch(str, queryObj) {
-    var sys_id = extractSysIdFromName(str);
+    var sys_id = StringUtil.extractSysIdFromName(str);
     var table = '';
     if (sys_id) {
         // try to get table
@@ -693,7 +605,7 @@ function processFoundRecords(searchObj, queryObj, records) {
             record.folder = queryObj.table;
         }
 
-        var fileSystemSafeName = normaliseRecordName(record.recordName),
+        var fileSystemSafeName = StringUtil.normaliseRecordName(record.recordName),
             filePath = basePath + constants.SLASH + record.folder + constants.SLASH,
             suffix = record.fieldSuffix,
             sys_id = '',
@@ -1124,7 +1036,7 @@ function receive(file, allDoneCallBack) {
     var map = fileRecords[file].getSyncMap(),
         fileMeta = fileRecords[file].getMeta(),
         // the sys_id either comes from the meta (if already exists) or the file name or not at all
-        sys_id = fileMeta.sys_id || extractSysIdFromName(map.keyValue) || false,
+        sys_id = fileMeta.sys_id || StringUtil.extractSysIdFromName(map.keyValue) || false,
         // map.keyValue could be like "insert_problem.d5e561f3c0a8000901a883289848f88d"
         // this is a combination of sys_id and name. Use sys_id from name when possible and ignore the query
         query = sys_id ? '' : map.key + '=' + map.keyValue;
