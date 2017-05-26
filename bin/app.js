@@ -203,10 +203,10 @@ function init() {
 
 /**
  * Exit node app
- * @param code - optional node system code. Defaults to 1 for normal exit. Any other number means error.
+ * @param code - optional node system code. Defaults to 0 for normal exit. Any other number means error.
  */
 function exitApp(code) {
-    code = typeof code == 'undefined' ? 1 : code;
+    code = typeof code == 'undefined' ? 0 : code;
     process.exit(code);
 }
 

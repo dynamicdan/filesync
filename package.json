@@ -24,7 +24,29 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "setup": "\"run-script\\setup.cmd\"",
+    "setup-mac": "./run-script/setup.cmd",
+    "setup-win": "\"run-script\\setup.cmd\"",
+
+    "watch-rttmsdev": "node bin/app.js --config rttmsdev.config.json",
+    "watch-riotintodev": "node bin/app.js --config riotintodev.config.json",
+
+    "search-rttmsdev": "\"run-script\\search.cmd rttmsdev\"",
+    "search-riotintodev": "\"run-script\\search.cmd riotintodev\"",
+    "search-rttmsdev-win": "\"run-script\\search.cmd rttmsdev\"",
+    "search-riotintodev-win": "\"run-script\\search.cmd riotintodev\"",
+    "search-rttmsdev-mac": "./run-script/search.cmd rttmsdev",
+    "search-riotintodev-mac": "./run-script/search.cmd riotintodev",
+
+    "resync-rttmsdev": "node bin/app.js --config rttmsdev.config.json --resync",
+    "resync-riotintodev": "node bin/app.js --config riotintodev.config.json --resync" ,
+
+    "portal-rttmsdev": "\"run-script\\portal.cmd rttmsdev\"",
+    "portal-riotintodev": "\"run-script\\portal.cmd riotintodev\"",
+    "portal-rttmsdev-win": "\"run-script\\portal.cmd rttmsdev\"",
+    "portal-riotintodev-win": "\"run-script\\portal.cmd riotintodev\"",
+    "portal-rttmsdev-mac": "./run-script/portal.cmd rttmsdev",
+    "portal-riotintodev-mac": "./run-script/portal.cmd riotintodev"
   },
   "repository": {
     "type": "git",
