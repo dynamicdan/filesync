@@ -14,6 +14,7 @@
     "glob": "^6.0.0",
     "minimist": "^1.1.1",
     "moment": "^2.10.2",
+    "netrc": "^0.1.4",
     "node-notifier": "^4.3.1",
     "osx-notifier": "^0.2.1",
     "@mishguru/restler": "https://github.com/mishguruorg/restler/tarball/master",
