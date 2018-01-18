@@ -170,6 +170,21 @@
                 "js": "script"
             },
             "subDirPattern": "type"
+        },
+        "sp_css": {
+            "table": "sp_css",
+            "key": "name",
+            "fields": {
+                "css": "css"
+            }
+        },
+        "sp_ng_templates": {
+          "table": "sp_ng_template",
+          "key": "id",
+            "fields": {
+                "html": "template"
+            },
+            "subDirPattern": "sp_widget"
         }
     }
 }
