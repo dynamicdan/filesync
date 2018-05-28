@@ -9,7 +9,7 @@ sn-filesync -- ServiceNow FileSync (v4.2.4)
 
  * [Intro](#intro)
  * [Overview](#overview)
- * [Intall and Setup](#intall-and-setup)
+ * [Install and Setup](#install-and-setup)
    * [Configuration](#configuration)
    * [Usage](#usage)
    * [app.config.json settings](#appconfigjson-settings)
@@ -35,7 +35,7 @@ sn-filesync -- ServiceNow FileSync (v4.2.4)
 
 ## Intro
 
-This is a **maintained** fork of the fruition-parteners filesync repo. This repository adds support for current versions of ServiceNow, cleans up code management (to allow more contribution!) and provides further solutions to common "editing in ServiceNow environment" issues (eg, conflict saves). See the **Road Map** below for more info. **Contributors wanted!**
+This is a **maintained** fork of the fruition-partners filesync repo. This repository adds support for current versions of ServiceNow, cleans up code management (to allow more contribution!) and provides further solutions to common "editing in ServiceNow environment" issues (eg, conflict saves). See the **Road Map** below for more info. **Contributors wanted!**
 
 
 ## Overview
@@ -53,7 +53,7 @@ Running a `--resync` (optional) will re-download all existing downloaded record 
 Conflict management also detects if the server version has changed before trying to upload local changes that may be outdated.
 
 
-## Intall and Setup
+## Install and Setup
 
 Older versions of FileSync include all relevant node modules and the node engine required to run FileSync. If you want a quick install/test then follow the instructions for FileSync tag [v3.0.5](https://github.com/dynamicdan/filesync/tree/v3.0.5) (stable).
 
@@ -69,7 +69,7 @@ The original video for installing, configuring and using FileSync for v.0.1.0 ca
 
 ### Configuration
 
-**Step 1.** Ensure that your instance is running with a version greater or equal to Eureka to make use of the JSONv2 API (enabled by default). For versions prior to Eurkea use the [older version of FileSync](https://github.com/fruition-partners/filesync).
+**Step 1.** Ensure that your instance is running with a version greater or equal to Eureka to make use of the JSONv2 API (enabled by default). For versions prior to Eureka use the [older version of FileSync](https://github.com/fruition-partners/filesync).
 
 **Step 2.** Create a folder on your computer where the records will be saved.
 
@@ -132,7 +132,7 @@ Adding an empty JSUtil.js file in the script_includes folder will cause FileSync
 The basic workflow is to initially create a record/script on ServiceNow (script include, business rule, ui script, etc.), then
 add an empty file of the same name (and mapped extension) to a mapped local folder (defined in config and displayed at startup).
 
-FileSync can not support creating new records in ServiceNow by simply adding local files since there are
+FileSync does not (and cannot) support creating new records in ServiceNow by simply adding local files since there are
 additional fields and rules that cannot be evaluated locally. Always start by creating a new
 record on the instance, then add the empty local file and start editing your script.
 
@@ -157,7 +157,7 @@ Example app.config.json (see also the included app.config.json file):
                 "host": "demo002.service-now.com",
                 "auth": "YWRtaW46YWRtaW4="          // example of encoded user/pass
             },
-            "/Users/joe.developer/instance/records": { // mac os non-https example
+            "/Users/joe.developer/instance/records": { // Mac OS non-https example
                 "host": "some.instance.com:16001",
                 "protocol": "http",                    // if https is not supported then force http here
                 "auth": "YWRtaW46YWRtaW4=",
@@ -276,7 +276,7 @@ folders | Object listing folders | not set (inherited) | See **lib/records.confi
 createAllFolders | Bool: true / false | false | Creates all folders specified by folders (if set) or the default **lib/records.config.json** file.
 preLoad | Bool: true / false | false | Creates local files that can be specified per root setting "`preLoadList`" (defined below). Set to false to ignore the property. Note that files that already exist are ignored but there is however a slight performance cost if you leave this option set to true. <br />**TIP**: set to false once files have been created.
 ignoreList | Array of matches | `/[\/\\]\./` | Define what files are **not** tracked for changes. Defaults to ignore hidden files on any directory level (eg `.sync_data`). Usage details can be found on the [chokidar readme](https://github.com/paulmillr/chokidar#path-filtering).
-ensureUniqueNames | Bool: true / false | false | If set to true then files will be post-fixed with the record sys_id to ensure all saved files have unique names. This supports records that have the same name on the same table. By default this is false to encourage more useful record names on the instance.
+ensureUniqueNames | Bool: true / false | false | If set to true then files will be post-fixed with the record sys_id to ensure all saved files have unique names. This supports records that have the same name on the same table. This is false by default to encourage more useful record names on the instance.
 proxy | Object | not set | Required if stuck behind a proxy. <br />Eg. `"proxy": { `<br />`"host": "host.com",`<br />`"port": "3860"`<br />` }`
 
 
@@ -361,9 +361,9 @@ Using this setup ensures that the customer will have all the files needed to do 
 The search feature supports 3 activites:
  1. **Demo** mode to test out the tool and your connection.
  1. **Custom search** that works with sysparm_query and your desired table(s) to search for records. Note that by default all tables defined under the ```folders``` config are searched if the ```table``` option is not provided.
- 1. **Download** option. Set to true when the search results match what you want in order to start syncing. When false or not set the search system displays found results but will not save the records to files.
+ 1. **Download** option. Set to true when the search results match what you want in order to start syncing. When the value is false or not set, the search system displays found results but will not save the records to files.
 
-Additionally it's possible to set the max amount of records returned per search (instance default is normally 10,000) and specify a specific table to search on (so long as it's mapped in your *folders* config).
+Additionally, it's possible to set the max amount of records returned per search (instance default is normally 10,000) and specify a specific table to search on (so long as it's mapped in your *folders* config).
 
 Pro users will find search especially useful with to always get the latest versions of records from their instance. There are also many advanced options for searching. See below for examples.
 
@@ -429,7 +429,7 @@ The search component enforces encourages using the config file instead of the co
  node bin/app.js --config ~/my-conf.json --search mine --download
  ```
 
- * Additionally download the full record as JSON:
+ * Also download the full record as JSON:
 
  ```
  node bin/app.js --config ~/my-conf.json --search mine --download --full_record
