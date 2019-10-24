@@ -10,8 +10,7 @@ var chokidar = require('chokidar');
 require('colors');
 var fs = require('fs-extra');
 var path = require('path');
-// used to generate a hash of a file
-var crypto = require('crypto');
+
 var glob = require("glob");
 var winston = require('winston');
 var moment = require('moment');
@@ -49,7 +48,10 @@ var constants = {
     DOWNLOAD_OK: 1,
     DOWNLOAD_FAIL: -1,
 
-    SLASH: '/'
+    SLASH: '/',
+
+    // max number of requests allowed to be running at once
+    instanceAPITolerance: 30
 
     //isMac: /^darwin/.test(process.platform)
     //isWin = /^win/.test(process.platform)
@@ -828,6 +830,7 @@ function addToPreLoadList(filePath, options) {
     }
 }
 
+// TODO: not currently used... is this a bad thing?
 function addIfNotPresent(filePath) {
     fs.exists(filePath, function (exists) {
         if (!exists) {
@@ -1040,6 +1043,17 @@ function receive(file, allDoneCallBack) {
         // map.keyValue could be like "insert_problem.d5e561f3c0a8000901a883289848f88d"
         // this is a combination of sys_id and name. Use sys_id from name when possible and ignore the query
         query = sys_id ? '' : map.key + '=' + map.keyValue;
+
+
+    // avoid overwhleming the instance and getting HTTP 427 responses
+    if(filesInQueueToDownload >= constants.instanceAPITolerance) {
+        setTimeout(function() {
+            receive(file, allDoneCallBack);
+        }, 200);
+
+        logit.debug('Delaying request to avoid HTTP 427 errors.');
+        return;
+    }
 
     logit.debug('Adding:', {
         file: file,

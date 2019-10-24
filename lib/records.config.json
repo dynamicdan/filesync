@@ -51,7 +51,7 @@
             "fields": {
                 "js": "script"
             },
-            "subDirPattern": "client_<client_callable>"
+            "subDirPattern": "scope_<sys_scope>/client_<client_callable>"
         },
         "style_sheets": {
             "table": "content_css",
@@ -185,6 +185,91 @@
                 "html": "template"
             },
             "subDirPattern": "sp_widget"
+        },
+
+
+
+
+
+
+
+
+        "sys_properties": {
+            "table": "sys_properties",
+            "key": "name",
+            "subDirPattern": "<sys_scope>",
+            "_custom": true
+        },
+        "sys_app_module": {
+            "_info": "Nav modules",
+            "table": "sys_app_module",
+            "key": "title",
+            "subDirPattern": "application",
+            "searchConstraint": "titleISNOTEMPTY",
+            "_info_searchConstraint": "Avoid separators",
+            "_custom": true
+        },
+        "sys_data_policy2": {
+            "table": "sys_data_policy2",
+            "key": "model_table",
+            "subDirPattern": "sys_package",
+            "_custom": true
+        },
+        "sysevent_register": {
+            "table": "sysevent_register",
+            "key": "event_name",
+            "subDirPattern": "sys_scope/table",
+            "_custom": true
+        },
+        "sys_choice": {
+            "_info": "Choices",
+            "table": "sys_choice",
+            "key": "element",
+            "subDirPattern": "name",
+            "noClassName": true,
+            "_custom": true
+        },
+        "tables": {
+            "_info": "Tables",
+            "table": "sys_db_object",
+            "key": "name",
+            "subDirPattern": "sys_package",
+            "searchConstraint": "sys_nameISNOTEMPTY",
+            "_custom": true
+        },
+        "sys_dictionary": {
+            "_info": "fields",
+            "table": "sys_dictionary",
+            "key": "element",
+            "subDirPattern": "sys_scope/name",
+            "_note": "name = table system name. sys_ fields have no scope and we do not want them.",
+            "searchConstraint": "elementISNOTEMPTY^sys_scopeISNOTEMPTY",
+            "_custom": true
+        },
+        "sys_documentation": {
+            "_info": "Field labels",
+            "table": "sys_documentation",
+            "key": "element",
+            "subDirPattern": "sys_scope/name",
+            "searchConstraint": "language=en^sys_scopeISNOTEMPTY",
+            "_custom": true
+        },
+        "sys_user_role": {
+            "_info": "user roles",
+            "table": "sys_user_role",
+            "key": "name",
+            "subDirPattern": "sys_package",
+            "_custom": true
+        },
+        "sys_security_acl": {
+            "_info": "ACLs",
+            "table": "sys_security_acl",
+            "key": "sys_name",
+            "fields": {
+                "js": "script"
+            },
+            "subDirPattern": "type/sys_name/operation",
+            "_custom": true
         }
     }
 }

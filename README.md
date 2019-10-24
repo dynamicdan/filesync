@@ -1,7 +1,7 @@
-sn-filesync -- ServiceNow FileSync (v4.2.4)
+sn-filesync -- ServiceNow FileSync
 =================
 
-[![NPM](https://nodei.co/npm-dl/sn-filesync.png?height=3&months=9)](https://nodei.co/npm-dl/sn-filesync/)
+[![NPM](https://nodei.co/npm/sn-filesync.png?downloadRank=true&stars=true)](https://nodei.co/npm-dl/sn-filesync/)
 
 [![Intro to FileSync](https://raw.githubusercontent.com/dynamicdan/filesync/master/thumbnail.png)](https://www.youtube.com/watch?v=OlVllfPVOrA "Intro to FileSync")
 
@@ -219,7 +219,14 @@ See the **lib/records.config.json** file for sample definitions.
                 "client.js": "client_script",    //   for ui pages, you might have three separate files:
                 "server.js": "processing_script" //    mypage.xhtml, mypage.client.js, mypage.server.js
             }                                    //   to store the all script associated with the page
-        }
+        },
+        "sys_choice": {
+            "_info": "Choices",
+            "table": "sys_choice",
+            "key": "element",
+            "subDirPattern": "name",
+            "noClassName": true                 // allow searching all child tables of sys_choice OR for when sys_class_name isn't present (!) on the table but it's used in a search query
+        },
         ...
     },
 ```

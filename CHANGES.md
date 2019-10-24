@@ -1,5 +1,15 @@
 # FileSync Changes
 
+* 2019-10-24 (**Version 4.3.0**)
+ * New features/support to help with downloading the **entire** (!) instance setup
+   * added new search option templates and helpful notes for day-2-day search/resync workflows
+   * added more system type tables like choice, props, dictionary etc. to extract more config
+   * allow searching without the sys_class_name restriction to include all records from child tables or when that table doesn't have the field
+     * Provide `"noClassName": true` in folder config per desired folder
+     * See also the readme section for "Folder definitions"
+ * Support for mass API calls to an instance to avoid HTTP 427 responses (better `--resync` support)
+
+
 * 2017-03-26 (**Version 4.2.4**)
  * Add debug option via the command line additional to config setting. (`--debug`)
  * Fix export not using subdir format

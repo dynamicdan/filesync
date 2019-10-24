@@ -21,11 +21,46 @@
     },
 
     "search": {
-        "mine": {
-            "query": "active=true^sys_updated_by=javascript:gs.getUserName()^ORsys_created_by=javascript:gs.getUserName()^ORDERBYDESCsys_updated_on",
-            "records_per_search": "100"
+
+
+         "__notes_daily_search": {
+            "readme": "Command line searches to do prior to development start. Full download of all the relevant/new stuff which can be completed as the first step to get the latest version of all config. WARNING: do a sanity check to verify credentials are still valid with limit of 1 first to avoid potential account lock out! (--records_per_search 1)",
+
+            "optional_step0_sanity_check": "./bin/app.js --config ../some/folder/app.config.json --search mine --records_per_search 1",
+
+            "step1": "./bin/app.js --config ../some/folder/app.config.json --search mine --download",
+
+            "step2": "./bin/app.js --config ../some/folder/app.config.json --search team-but-me --download",
+
+            "then_start_work": "./bin/app.js --config ../some/folder/app.config.json"
         },
-        "team": {
+
+
+
+        "all-from2019": {
+            "query": "sys_created_on>javascript:gs.dateGenerate('2018-12-31','23:59:59')",
+            "records_per_search": "10",
+            "download": false
+        },
+
+        "init": {
+            "_note": "Query will run across all defined tables. Somewhat experimental in terms of mass download. Once downloaded, will work fine.",
+            "query": "ORDERBYDESCsys_updated_on",
+            "records_per_search": "10000",
+            "download": false
+        },
+
+        "mine": {
+            "query": "sys_updated_by=javascript:gs.getUserName()^ORsys_created_by=javascript:gs.getUserName()^ORDERBYDESCsys_updated_on",
+            "records_per_search": "300"
+        },
+        "team-but-me": {
+            "_note": "change the date to reflect when your team/instance was first setup",
+            "query": "sys_created_on>javascript:gs.dateGenerate('2019-06-01','00:00:00')^sys_created_by!=javascript:gs.getUserName()^sys_created_by!=admin^ORDERBYDESCsys_updated_on",
+            "records_per_search": "300"
+        },
+        "team_active": {
+            "_note": "change the date to reflect when your team/instance was first setup",
             "query": "active=true^sys_created_on>javascript:gs.dateGenerate('2015-03-25','23:59:59')^sys_created_by!=javascript:gs.getUserName()^sys_updated_by!=javascript:gs.getUserName()^sys_created_by!=admin^ORDERBYDESCsys_updated_on",
             "records_per_search": "100"
         },
@@ -41,7 +76,71 @@
             "records_per_search": "1",
             "download": true,
             "full_record": true
+        },
+
+
+
+        "__notes_instance_download": {
+            "info": "The below config allows downloading the entier data model including fields and labels. The following ~90K column/dictionary entries are broken down into groups under 10K to avoid exceeding the 10K query limit. The complete cmdb is ignored (~57K records)."
+        },
+        "t1": {
+            "table": "sys_dictionary",
+            "query": "nameSTARTSWITHa^ORnameSTARTSWITHb^ORnameSTARTSWITHc^ORnameSTARTSWITHd^ORnameSTARTSWITHe^ORnameSTARTSWITHf^ORnameSTARTSWITHg^ORnameSTARTSWITHh^ORnameSTARTSWITHi^ORnameSTARTSWITHj^ORnameSTARTSWITHk^ORnameSTARTSWITHl^ORnameSTARTSWITHm^ORnameSTARTSWITHn^nameNOT LIKEcmdb_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "t2": {
+            "table": "sys_dictionary",
+            "query": "nameSTARTSWITHo^ORnameSTARTSWITHp^ORnameSTARTSWITHq^ORnameSTARTSWITHr^ORnameSTARTSWITHt^ORnameSTARTSWITHu^ORnameSTARTSWITHv^ORnameSTARTSWITHw^ORnameSTARTSWITHx^ORnameSTARTSWITHy^ORnameSTARTSWITHz^nameNOT LIKEcmdb_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "t3": {
+            "table": "sys_dictionary",
+            "query": "nameSTARTSWITHs^nameNOT LIKEcmdb_^nameNOT LIKEsys_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "t4": {
+            "table": "sys_dictionary",
+            "query": "nameSTARTSWITHs^nameNOT LIKEcmdb_^nameLIKEsys_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "d1": {
+            "table": "sys_documentation",
+            "query": "nameSTARTSWITHa^ORnameSTARTSWITHb^ORnameSTARTSWITHc^ORnameSTARTSWITHd^ORnameSTARTSWITHe^ORnameSTARTSWITHf^ORnameSTARTSWITHg^ORnameSTARTSWITHh^ORnameSTARTSWITHi^ORnameSTARTSWITHj^ORnameSTARTSWITHk^ORnameSTARTSWITHl^ORnameSTARTSWITHm^ORnameSTARTSWITHn^nameNOT LIKEcmdb_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "d2": {
+            "table": "sys_documentation",
+            "query": "nameSTARTSWITHo^ORnameSTARTSWITHp^ORnameSTARTSWITHq^ORnameSTARTSWITHr^ORnameSTARTSWITHt^ORnameSTARTSWITHu^ORnameSTARTSWITHv^ORnameSTARTSWITHw^ORnameSTARTSWITHx^ORnameSTARTSWITHy^ORnameSTARTSWITHz^nameNOT LIKEcmdb_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "d3": {
+            "table": "sys_documentation",
+            "query": "nameSTARTSWITHs^nameNOT LIKEcmdb_^nameNOT LIKEsys_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
+        },
+        "d4": {
+            "table": "sys_documentation",
+            "query": "nameSTARTSWITHs^nameNOT LIKEcmdb_^nameLIKEsys_",
+            "records_per_search": "10000",
+            "download": true,
+            "full_record": true
         }
+
+
     },
 
     "preLoad": true,
