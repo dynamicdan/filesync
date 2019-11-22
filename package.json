@@ -22,7 +22,10 @@
   "engines": {
     "node": ">=4.2.6 || >=5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "diff": "^3.0.1",
+    "inquirer": "^1.2.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
