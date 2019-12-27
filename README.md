@@ -177,7 +177,30 @@ Example app.config.json (see also the included app.config.json file):
     }
 ```
 
+#### .netrc Auth Example
 
+This example shows how to use the .netrc file for credentials.
+
+Example app.config.json:
+
+```javascript
+    {
+        "roots": {
+            "/Users/joe.developer/instance/records": {
+                "host": "some-instance.service-now.com"
+            }
+        },
+        "useNetrcAuth": true
+    }
+```
+
+Example ~/.netrc file:
+
+```
+machine some-instance.service-now.com
+login admin
+password hgdf723jdt72u28
+```
 
 ## Advanced settings
 
@@ -285,6 +308,7 @@ preLoad | Bool: true / false | false | Creates local files that can be specified
 ignoreList | Array of matches | `/[\/\\]\./` | Define what files are **not** tracked for changes. Defaults to ignore hidden files on any directory level (eg `.sync_data`). Usage details can be found on the [chokidar readme](https://github.com/paulmillr/chokidar#path-filtering).
 ensureUniqueNames | Bool: true / false | false | If set to true then files will be post-fixed with the record sys_id to ensure all saved files have unique names. This supports records that have the same name on the same table. This is false by default to encourage more useful record names on the instance.
 proxy | Object | not set | Required if stuck behind a proxy. <br />Eg. `"proxy": { `<br />`"host": "host.com",`<br />`"port": "3860"`<br />` }`
+useNetrcAuth | Bool: true / false | false | If set to true, authentication information information will be retrieved from your ~/.netrc file. This provides a simple mechanism to keep credentials separate from your project configuration.<br />The .netrc file is a standard mechanism used by many command line utilites (e.g. curl, ftp, httpie, etc.) to store credentials in a controlled way.
 
 
 #### Root specific options
