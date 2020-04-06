@@ -1477,7 +1477,8 @@ function watchFolders() {
             persistent: true,
             // ignores use anymatch (https://github.com/es128/anymatch)
             ignored: constants.chokiWatcherIgnore,
-
+            //waited till write to file finishes (atomic save bug)
+            awaitWriteFinish: true,
             // performance hit?
             alwaysStat: true
         })
